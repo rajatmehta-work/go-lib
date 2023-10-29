@@ -1,13 +1,13 @@
-package map
+package hashmap
 
-type Mapa[K comparable, V any] interface {
+type Map[K comparable, V any] interface {
 	Get(K) (V, bool)
 	Set(K, V)
 	Delete(K)
 }
 
-func New[K comparable, V any]() Storage[K, V] {
-	return Storage[K, V](store[K, V]{ptrRef: make(map[K]V)})
+func New[K comparable, V any]() Map[K, V] {
+	return Map[K, V](store[K, V]{ptrRef: make(map[K]V)})
 }
 
 type store[K comparable, V any] struct {
