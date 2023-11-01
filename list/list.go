@@ -97,8 +97,8 @@ func (l *List[K, V]) insert(e, at *Element[K, V]) *Element[K, V] {
 }
 
 // insertValue is a convenience wrapper for insert(&Element{Value: v}, at).
-func (l *List[K, V]) insertValue(v V, at *Element[K, V]) *Element[K, V] {
-	return l.insert(&Element[K, V]{Value: v}, at)
+func (l *List[K, V]) insertValue(k K, v V, at *Element[K, V]) *Element[K, V] {
+	return l.insert(&Element[K, V]{Value: v, Key: k}, at)
 }
 
 // remove removes e from its list, decrements l.len
@@ -128,47 +128,47 @@ func (l *List[K, V]) move(e, at *Element[K, V]) {
 // Remove removes e from l if e is an element of list l.
 // It returns the element value e.Value.
 // The element must not be nil.
-func (l *List[K, V]) Remove(e *Element[K, V]) V {
+func (l *List[K, V]) Remove(e *Element[K, V]) (K, V) {
 	if e.list == l {
 		// if e.list == l, l must have been initialized when e was inserted
 		// in l or l == nil (e is a zero Element) and l.remove will crash
 		l.remove(e)
 	}
-	return e.Value
+	return e.Key, e.Value
 }
 
 // PushFront inserts a new element e with value v at the front of list l and returns e.
-func (l *List[K, V]) PushFront(v V) *Element[K, V] {
+func (l *List[K, V]) PushFront(k K, v V) *Element[K, V] {
 	l.lazyInit()
-	return l.insertValue(v, &l.root)
+	return l.insertValue(k, v, &l.root)
 }
 
 // PushBack inserts a new element e with value v at the back of list l and returns e.
-func (l *List[K, V]) PushBack(v V) *Element[K, V] {
+func (l *List[K, V]) PushBack(k K, v V) *Element[K, V] {
 	l.lazyInit()
-	return l.insertValue(v, l.root.prev)
+	return l.insertValue(k, v, l.root.prev)
 }
 
 // InsertBefore inserts a new element e with value v immediately before mark and returns e.
 // If mark is not an element of l, the list is not modified.
 // The mark must not be nil.
-func (l *List[K, V]) InsertBefore(v V, mark *Element[K, V]) *Element[K, V] {
+func (l *List[K, V]) InsertBefore(k K, v V, mark *Element[K, V]) *Element[K, V] {
 	if mark.list != l {
 		return nil
 	}
 	// see comment in List.Remove about initialization of l
-	return l.insertValue(v, mark.prev)
+	return l.insertValue(k, v, mark.prev)
 }
 
 // InsertAfter inserts a new element e with value v immediately after mark and returns e.
 // If mark is not an element of l, the list is not modified.
 // The mark must not be nil.
-func (l *List[K, V]) InsertAfter(v V, mark *Element[K, V]) *Element[K, V] {
+func (l *List[K, V]) InsertAfter(k K, v V, mark *Element[K, V]) *Element[K, V] {
 	if mark.list != l {
 		return nil
 	}
 	// see comment in List.Remove about initialization of l
-	return l.insertValue(v, mark)
+	return l.insertValue(k, v, mark)
 }
 
 // MoveToFront moves element e to the front of list l.
@@ -218,7 +218,7 @@ func (l *List[K, V]) MoveAfter(e, mark *Element[K, V]) {
 func (l *List[K, V]) PushBackList(other *List[K, V]) {
 	l.lazyInit()
 	for i, e := other.Len(), other.Front(); i > 0; i, e = i-1, e.Next() {
-		l.insertValue(e.Value, l.root.prev)
+		l.insertValue(e.Key, e.Value, l.root.prev)
 	}
 }
 
@@ -227,6 +227,6 @@ func (l *List[K, V]) PushBackList(other *List[K, V]) {
 func (l *List[K, V]) PushFrontList(other *List[K, V]) {
 	l.lazyInit()
 	for i, e := other.Len(), other.Back(); i > 0; i, e = i-1, e.Prev() {
-		l.insertValue(e.Value, &l.root)
+		l.insertValue(e.Key, e.Value, &l.root)
 	}
 }
