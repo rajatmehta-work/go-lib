@@ -4,6 +4,7 @@ type Map[K comparable, V any] interface {
 	Get(K) (V, bool)
 	Set(K, V)
 	Delete(K)
+	Len() int
 }
 
 func New[K comparable, V any]() Map[K, V] {
@@ -24,4 +25,8 @@ func (p store[K, V]) Delete(key K) {
 func (p store[K, V]) Get(key K) (V, bool) {
 	val, ok := p.ptrRef[key]
 	return val, ok
+}
+
+func (p store[K, V]) Len() int {
+	return len(p.ptrRef)
 }
